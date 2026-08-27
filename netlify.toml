@@ -1,12 +1,5 @@
-﻿# FOYSAL IT OS — Netlify production configuration
-# This makes the Next.js app deploy correctly on Netlify with server/API routes. 
-FOYSALIT
-Redirect URI
-https://foysal-it.netlify.app/
-Client ID
-vZesobsQofSnml1XiJc2MFlrmVmVp9HEHyPvl-ViiDw
-Secret
-REH6GfNFjS8eOUrvMFgh4h5w6hpR9NaqJ9s9vkc7170
+# FOYSAL IT OS — Netlify production configuration
+# This makes the Next.js app deploy correctly on Netlify with server/API routes.
 
 [build]
   command = "npm run build"
