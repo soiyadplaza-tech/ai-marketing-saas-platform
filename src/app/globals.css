@@ -1,0 +1,130 @@
+@import "tailwindcss";
+
+:root {
+  --brand: #4f46e5;
+  --brand-dark: #3730a3;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  background: #f1f5f9;
+  color: #0f172a;
+  -webkit-font-smoothing: antialiased;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 999px; }
+
+@keyframes fadein {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fadein { animation: fadein 0.25s ease-out; }
+
+@keyframes spin { to { transform: rotate(360deg); } }
+.spinner {
+  width: 18px; height: 18px;
+  border: 2px solid rgba(255,255,255,0.4);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+.spinner-dark {
+  border: 2px solid #e2e8f0;
+  border-top-color: #4f46e5;
+}
+
+/* ============================================================
+   Mobile experience — additive, safe on desktop too
+   ============================================================ */
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+/* (1) Safe-area support: give layout shells room for notches/Dynamic Island. */
+html, body {
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+.safe-top { padding-top: env(safe-area-inset-top); }
+.safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
+
+/* (2) Prevent native tap highlights / text selection on interactive chrome. */
+button,
+a[role="button"],
+[role="tab"],
+.nav-icon,
+.tab,
+select,
+input[type="checkbox"],
+input[type="radio"] {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+/* Keep text inputs and content selectable (don't break typing/copy). */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="search"],
+textarea,
+p,
+span,
+div[data-selectable] {
+  -webkit-user-select: text;
+  user-select: text;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* (3) Mobile bottom navigation bar */
+.mobile-bottom-nav {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 60;
+  display: flex;
+  align-items: stretch;
+  justify-content: space-around;
+  background: rgba(15, 23, 42, 0.97);
+  backdrop-filter: blur(8px);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: calc(env(safe-area-inset-bottom) + 6px);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+.mobile-bottom-nav a {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 8px 4px;
+  font-size: 10px;
+  font-weight: 600;
+  color: #94a3b8;
+  text-decoration: none;
+  border-radius: 12px;
+  transition: color .15s ease, background .15s ease;
+}
+.mobile-bottom-nav a.active {
+  color: #fff;
+  background: linear-gradient(135deg, #9333ea 0%, #db2777 100%);
+}
+.mobile-bottom-nav a .bi { font-size: 20px; line-height: 1; }
+
+/* When the bottom nav is present, pad the main content so it isn't hidden. */
+@media (max-width: 767px) {
+  main { padding-bottom: 84px !important; }
+}
