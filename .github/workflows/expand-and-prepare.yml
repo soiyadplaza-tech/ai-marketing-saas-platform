@@ -1,0 +1,105 @@
+name: Expand and prepare source
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-actions[bot]'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Expand project archives
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          from zipfile import ZipFile
+          import shutil
+          import tempfile
+
+          root = Path.cwd()
+          archives = [
+              'app.zip',
+              'components.zip',
+              'lib.zip',
+              'db.zip',
+              'src.zip',
+          ]
+
+          for name in archives:
+              archive = root / name
+              if not archive.exists():
+                  continue
+              with tempfile.TemporaryDirectory() as td:
+                  tmp = Path(td)
+                  with ZipFile(archive) as z:
+                      z.extractall(tmp)
+                  entries = list(tmp.iterdir())
+                  source = entries[0] if len(entries) == 1 and entries[0].is_dir() else tmp
+                  for item in source.iterdir():
+                      dest = root / item.name
+                      if item.is_dir():
+                          dest.mkdir(parents=True, exist_ok=True)
+                          for child in item.iterdir():
+                              target = dest / child.name
+                              if child.is_dir():
+                                  if target.exists():
+                                      shutil.copytree(child, target, dirs_exist_ok=True)
+                                  else:
+                                      shutil.copytree(child, target)
+                              else:
+                                  shutil.copy2(child, target)
+                      else:
+                          shutil.copy2(item, dest)
+
+          # Remove archive-only packaging files after expansion.
+          for pattern in ('*.zip', '*.rar'):
+              for p in root.glob(pattern):
+                  p.unlink()
+
+          # Never keep local secret/config scratch files in source control.
+          for rel in ['src/lib/env.txt', '.env']:
+              p = root / rel
+              if p.exists():
+                  p.unlink()
+          PY
+
+      - name: Ensure safe ignore rules
+        shell: bash
+        run: |
+          cat > .gitignore <<'EOF'
+          node_modules/
+          .next/
+          out/
+          dist/
+          .env
+          .env.*
+          !.env.example
+          *.log
+          .DS_Store
+          npm-debug.log*
+          yarn-debug.log*
+          yarn-error.log*
+          EOF
+
+      - name: Commit prepared source
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          if git diff --cached --quiet; then
+            echo 'No source changes to commit.'
+            exit 0
+          fi
+          git commit -m 'chore: expand and prepare production source'
+          git push
