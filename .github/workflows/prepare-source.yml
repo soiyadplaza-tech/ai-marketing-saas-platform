@@ -1,0 +1,92 @@
+name: Prepare and verify application source
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Extract project archives
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .source-staging
+          for f in app.zip src.zip components.zip lib.zip db.zip; do
+            if [ -f "$f" ]; then
+              echo "Extracting $f"
+              mkdir -p ".source-staging/${f%.zip}"
+              unzip -oq "$f" -d ".source-staging/${f%.zip}"
+            fi
+          done
+
+          # Promote the most likely application root first.
+          if [ -f .source-staging/app/package.json ]; then
+            cp -a .source-staging/app/. .
+          fi
+
+          # Merge common split archives when their extracted content is present.
+          for d in src components lib db; do
+            if [ -d ".source-staging/$d" ]; then
+              mkdir -p "$d"
+              cp -a ".source-staging/$d/." "$d/"
+            fi
+          done
+
+          rm -rf .source-staging
+
+      - name: Remove generated archives and sensitive local files
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f app.zip src.zip components.zip lib.zip db.zip
+          rm -f app.rar src.rar components.rar lib.rar db.rar
+          find . -type f \( -name '.env' -o -name '.env.local' -o -name 'env.txt' \) -not -path './.git/*' -delete
+          find . -type d \( -name node_modules -o -name .next \) -prune -exec rm -rf {} +
+
+      - name: Write safe environment template
+        shell: bash
+        run: |
+          cat > .env.example <<'EOF'
+# Copy to .env.local for local development. Never commit real secrets.
+DATABASE_URL=
+GITHUB_CLIENT_ID=
+GITHUB_CLIENT_SECRET=
+OPENAI_API_KEY=
+GEMINI_API_KEY=
+ANTHROPIC_API_KEY=
+GROQ_API_KEY=
+DEEPSEEK_API_KEY=
+NEXT_PUBLIC_SITE_URL=
+APP_BASE_URL=
+EOF
+
+      - name: Validate project metadata
+        shell: bash
+        run: |
+          test -f package.json
+          node -e "const p=require('./package.json'); if(!p.scripts?.build) process.exit(1); console.log('package:',p.name||'unnamed'); console.log('build:',p.scripts.build)"
+
+      - name: Commit prepared source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No source changes to commit."
+          else
+            git commit -m "chore: prepare production source"
+            git push
+          fi
