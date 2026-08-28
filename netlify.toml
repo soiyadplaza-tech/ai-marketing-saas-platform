@@ -1,5 +1,4 @@
-# FOYSAL IT OS — Netlify production configuration
-# This makes the Next.js app deploy correctly on Netlify with server/API routes.
+# Foysal IT — production Netlify configuration
 
 [build]
   command = "npm run build"
@@ -8,29 +7,21 @@
 [build.environment]
   NODE_VERSION = "22"
   NEXT_TELEMETRY_DISABLED = "1"
-  # Public, non-secret deployment URLs. Secrets must be configured in Netlify UI.
-  NEXT_PUBLIC_SITE_URL = "https://foysalit-app.netlify.app"
-  APP_BASE_URL = "https://foysalit-app.netlify.app"
-  CUSTOM_DOMAIN = "foysalit.publicvm.com"
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
 
-# Security headers for all routes
 [[headers]]
   for = "/*"
   [headers.values]
     X-Frame-Options = "DENY"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
-    Permissions-Policy = "camera=(self), microphone=(self), geolocation=(self), payment=(self)"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=(), payment=()"
     Strict-Transport-Security = "max-age=63072000; includeSubDomains; preload"
 
-# Never cache API responses
 [[headers]]
   for = "/api/*"
   [headers.values]
     Cache-Control = "no-store, max-age=0"
-
-# Permanent app routes fallback is handled by Next.js plugin.
-
+    X-Robots-Tag = "noindex"
