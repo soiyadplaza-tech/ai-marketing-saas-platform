@@ -42,17 +42,17 @@ npm run build
 
 ## Production deployment
 
-Netlify supports modern Next.js App Router, SSR, route handlers, caching and image optimization through its OpenNext adapter. The repository uses `npm run build` and `.next` as the production settings. citeturn0search1turn0search5
+Netlify supports modern Next.js App Router, SSR, route handlers, caching and image optimization through its OpenNext adapter. The repository uses `npm run build` and `.next` as the production settings.
 
-Connect this repository to Netlify and configure only the required environment variables from `.env.example`. A production deploy should be triggered from the production branch and verified with a live smoke test. citeturn0search8turn0search18
+Connect this repository to Netlify and configure only the required environment variables from `.env.example`. A production deploy should be triggered from the production branch and verified with a live smoke test.
 
 ## AI agents
 
-Agent features should use controlled server-side tools, explicit permissions, validation, tracing and approval for high-impact operations. OpenAI's current Agents SDK is designed for tool-using, long-running agent workflows with controlled execution and tracing. citeturn0search6turn0search20
+Agent features should use controlled server-side tools, explicit permissions, validation, tracing and approval for high-impact operations. OpenAI's Agents SDK supports tool-using, long-running agent workflows with controlled execution and tracing.
 
 ## Repository security
 
-Enable Dependabot, secret scanning/push protection and code scanning where available. Keep GitHub Actions permissions minimal and pin third-party actions to reviewed commit SHAs for higher supply-chain security. citeturn0search0turn0search11
+Enable Dependabot, secret scanning/push protection and code scanning where available. Keep GitHub Actions permissions minimal and pin third-party actions to reviewed commit SHAs for higher supply-chain security.
 
 ## Important production rule
 
