@@ -1,74 +1,59 @@
-# Foysal IT — AI Marketing SaaS Platform
+# Foysal IT — AI Marketing SaaS
 
-Production-oriented AI marketing workspace for automation, analytics, content, SEO, social workflows, messaging, and subscription-based SaaS operations.
+A production-oriented, multi-user AI marketing platform for content, SEO, analytics, social workflows, messaging and subscription-based SaaS operations.
 
-## Product goals
-- Fast, secure, maintainable SaaS architecture
-- AI-assisted marketing workflows
-- Multi-user authentication and role-based administration
-- Subscription and usage controls
-- Extensible integrations for OpenAI, messaging, social platforms, and payments
+## Product direction
 
-## Recommended production stack
-- Next.js + React
-- PostgreSQL + Drizzle ORM
-- Netlify for web delivery/serverless workloads
-- GitHub for source control and CI
-- OpenAI for AI capabilities
-- Sent for approved messaging channels
+- AI-assisted marketing workspace
+- Multi-user accounts with role-based administration
+- Google/Meta OAuth-ready authentication architecture
+- Connected social accounts and provider integrations
+- Subscription plans, entitlements and usage controls
+- Admin-managed feature flags and integration configuration
+- OpenAI-powered assistants and future agent workflows
+- Sent-powered messaging where the account/channel is approved
+- PostgreSQL + Drizzle data layer
+- Netlify production deployment
 
-## Engineering standards
-- Keep secrets out of Git. Use deployment environment variables.
-- Validate all external input server-side.
-- Enforce authorization on every privileged API route.
-- Use least-privilege roles and auditable admin actions.
-- Add rate limiting to authentication, AI, messaging, and payment endpoints.
-- Use database migrations and backups for production data.
-- Pin dependency versions and keep a lockfile committed.
-- Run lint, typecheck, tests, and production build in CI before deployment.
+## Engineering standard
 
-## Environment variables
-Create a local `.env.local` from `.env.example`. Never commit real credentials.
+The repository is organized for a real software product rather than a demo. CI runs TypeScript, lint and production build checks. Production secrets belong in Netlify/AppDeploy/GitHub environment stores, never in source control.
 
-Typical production integrations may require:
-- `DATABASE_URL`
-- `OPENAI_API_KEY`
-- OAuth client IDs/secrets for enabled providers
-- Sent API credentials for enabled messaging channels
-- Payment provider credentials for enabled gateways
-- Application URL / auth configuration
-
-Only configure variables required by features actually enabled in the application.
+See:
+- [ARCHITECTURE.md](ARCHITECTURE.md) — system design and scalability principles
+- [SECURITY.md](SECURITY.md) — security policy and secret handling
+- [CONTRIBUTING.md](CONTRIBUTING.md) — development and PR standards
+- [.env.example](.env.example) — environment variable contract
 
 ## Local development
+
 ```bash
-npm ci
+npm install
 npm run dev
 ```
 
-## Production verification
+Quality checks:
+
 ```bash
-npm ci
 npm run typecheck
 npm run lint
 npm run build
 ```
 
-If the repository defines additional test scripts, run them in CI as well.
+## Production deployment
 
-## Deployment
-Use the repository's Netlify configuration and production environment variables. Do not place API keys, OAuth secrets, payment credentials, or database passwords in source control.
+Netlify supports modern Next.js App Router, SSR, route handlers, caching and image optimization through its OpenNext adapter. The repository uses `npm run build` and `.next` as the production settings. citeturn0search1turn0search5
 
-## Security baseline
-- Secure cookies and HTTPS in production
-- CSRF protection where applicable
-- Strong password hashing if password authentication is enabled
-- OAuth state/PKCE validation where applicable
-- Server-side authorization checks
-- Webhook signature verification
-- Payment idempotency
-- Structured audit logs for admin actions
-- Safe error messages that do not leak secrets or internal stack traces
+Connect this repository to Netlify and configure only the required environment variables from `.env.example`. A production deploy should be triggered from the production branch and verified with a live smoke test. citeturn0search8turn0search18
 
-## Status
-This repository is intended for production preparation. A deployment is considered production-ready only after CI/build checks and live smoke tests pass with the required environment variables configured.
+## AI agents
+
+Agent features should use controlled server-side tools, explicit permissions, validation, tracing and approval for high-impact operations. OpenAI's current Agents SDK is designed for tool-using, long-running agent workflows with controlled execution and tracing. citeturn0search6turn0search20
+
+## Repository security
+
+Enable Dependabot, secret scanning/push protection and code scanning where available. Keep GitHub Actions permissions minimal and pin third-party actions to reviewed commit SHAs for higher supply-chain security. citeturn0search0turn0search11
+
+## Important production rule
+
+A feature is not considered production-ready until its required credentials, database migrations, provider approvals, automated checks and live smoke tests pass. This prevents configuration-only changes from being mistaken for a working integration.
